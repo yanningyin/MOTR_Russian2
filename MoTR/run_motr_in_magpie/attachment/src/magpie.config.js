@@ -7,6 +7,6 @@ export default {
   contactEmail: 'cui.ding@uzh.ch',
   // Either 'debug', 'directLink' or 'prolific'
   //mode: 'prolific',
-  mode: 'debug',
+  mode: 'directLink',
   language: 'en'
 };
