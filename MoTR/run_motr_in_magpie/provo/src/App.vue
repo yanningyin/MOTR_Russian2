@@ -99,7 +99,7 @@
           </form>
           <div class="oval-cursor"></div>
           <template>
-            <div v-if="showFirstDiv" class="readingText" @mousemove="moveCursor" @mouseleave="changeBack">
+            <div v-if="showFirstDiv" class="readingText" @touchmove="moveCursor" @touchend="changeBack">
               <template v-for="(word, index) of trial.text.split(' ')">
                 <span :key="index" :data-index="index" >
                   {{ word }}
