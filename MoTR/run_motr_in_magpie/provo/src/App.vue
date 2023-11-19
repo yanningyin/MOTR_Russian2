@@ -2,7 +2,7 @@
 <!--  Comprehension questions appear afterwards in the same slide -->
 
 <template>
-  <Experiment title="Mouse tracking for Reading">
+  <Experiment title="Mouse tracking for Reading" translate="no">
 
     <Screen :title="'Welcome'" class="instructions" :validations="{
         SubjectID: {
@@ -99,7 +99,7 @@
           </form>
           <div class="oval-cursor"></div>
           <template>
-            <div v-if="showFirstDiv" class="readingText" @mousemove="moveCursor" @mouseleave="changeBack">
+            <div v-if="showFirstDiv" class="readingText" @mousemove="moveCursor" @mouseleave="changeBack" @touchstart="moveFinger" @touchmove="moveFinger">
               <template v-for="(word, index) of trial.text.split(' ')">
                 <span :key="index" :data-index="index" >
                   {{ word }}
@@ -235,6 +235,34 @@ export default {
       this.mousePosition.x = e.offsetX;
       this.mousePosition.y = e.offsetY;
     },
+
+    moveFinger(e) {
+      e.preventDefault();
+      this.$el.querySelector(".oval-cursor").classList.add('grow-touch');
+      let  x = e.touches[0].clientX;
+      let  y = e.touches[0].clientY;
+
+      const elementAtCursor= document.elementFromPoint(x, y).closest('span');
+      if (elementAtCursor){
+        this.$el.querySelector(".oval-cursor").classList.remove('blank');
+        this.currentIndex = elementAtCursor.getAttribute('data-index');
+      } else {
+        this.$el.querySelector(".oval-cursor").classList.add('blank');
+        const elementAboveCursor = document.elementFromPoint(x, y-3).closest('span');
+        if (elementAboveCursor){
+          this.currentIndex = elementAboveCursor.getAttribute('data-index');
+        } else {
+          this.currentIndex = -1;
+        }
+      }
+      
+      this.$el.querySelector(".oval-cursor").style.left = `${x+12}px`;
+      this.$el.querySelector(".oval-cursor").style.top = `${y-6}px`;
+      this.mousePosition.x = e.offsetX;
+      this.mousePosition.y = e.offsetY;
+    },
+
+
     toggleDivs() {
     this.showFirstDiv = !this.showFirstDiv;
     },
@@ -354,5 +382,37 @@ export default {
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
   }
+
+.oval-cursor.grow-touch.blank {
+    width: 8em;
+    height: 4em;
+  }
+  .oval-cursor.grow-touch {
+    /* width: 102px;
+    height: 38px; */
+    width: 2em;
+    height: 1em;
+    border-radius: 50%;
+    box-shadow: 30px 0 8px -4px rgba(255, 255, 255, 0.1), -30px 0 8px -4px rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.3);
+    background-blend-mode: screen;
+    pointer-events: none;
+    transition: width 0.5s, height 0.5s;
+    filter:blur(3px);
+  }
+  .oval-cursor.grow-touch::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 70%;
+    background-color: white;
+    mix-blend-mode: normal;
+    border-radius: 50%;
+}
+
+
 
 </style>
